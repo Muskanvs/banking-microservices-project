@@ -4,7 +4,7 @@
       name: account-service
 
     datasource:
-      url: jdbc:mysql://localhost:3306/account_db?createDatabaseIfNotExist=true
+      url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/account_db?createDatabaseIfNotExist=true}
       username: root
       password: ${SPRING_DATASOURCE_PASSWORD}
       driver-class-name: com.mysql.cj.jdbc.Driver
@@ -18,7 +18,7 @@
           dialect: org.hibernate.dialect.MySQLDialect
 
     kafka:
-      bootstrap-servers: localhost:9092
+      bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
       consumer:
         group-id: account-service-group
         auto-offset-reset: earliest
@@ -40,7 +40,7 @@
         value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
 
   server:
-    port: 8081
+    port: ${PORT:8081}
 
   management:
     endpoints:
