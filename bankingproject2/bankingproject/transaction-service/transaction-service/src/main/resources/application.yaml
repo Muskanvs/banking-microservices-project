@@ -27,7 +27,7 @@ spring:
     bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     properties:
       security.protocol: ${SPRING_KAFKA_PROPERTIES_SECURITY_PROTOCOL:PLAINTEXT}
-      sasl.mechanism: ${SPRING_KAFKA_PROPERTIES_SASL_MECHANISM:}
+      sasl.mechanism: ${SPRING_KAFKA_PROPERTIES_SASL_MECHANISM:SCRAM-SHA-256}
       sasl.jaas.config: ${SPRING_KAFKA_PROPERTIES_SASL_JAAS_CONFIG:}
     consumer:
       group-id: transaction-service-group
