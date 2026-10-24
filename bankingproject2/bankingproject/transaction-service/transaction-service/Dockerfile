@@ -1,12 +1,25 @@
 
 FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
+
 COPY pom.xml .
 COPY src ./src
 RUN mvn clean package -DskipTests
 
 FROM eclipse-temurin:17-jre
 WORKDIR /app
+
 COPY --from=build /app/target/*.jar app.jar
+
+# Add the Aiven Kafka CA certificate
+COPY certs/ca.pem /tmp/ca.pem
+
+# Import the certificate into Java's trust store
+RUN keytool -importcert -noprompt \
+    -alias aiven-kafka-ca \
+    -file /tmp/ca.pem \
+    -keystore "$JAVA_HOME/lib/security/cacerts" \
+    -storepass changeit
+
 EXPOSE 8082
 ENTRYPOINT ["java", "-jar", "app.jar"]
