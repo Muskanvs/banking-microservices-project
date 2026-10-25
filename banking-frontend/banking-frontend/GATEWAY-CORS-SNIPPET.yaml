@@ -9,7 +9,7 @@ spring:
                 allowedOrigins:
                   - "http://localhost:5173"
                   - "http://localhost:5174"
-                  - "https://YOUR-FRONTEND-NAME.onrender.com"
+                  - "https://banking-frontend-4nvz.onrender.com"
                 allowedMethods:
                   - GET
                   - POST
