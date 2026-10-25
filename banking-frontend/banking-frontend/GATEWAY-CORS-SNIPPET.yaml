@@ -1,15 +1,20 @@
-# Add this under spring.cloud.gateway.server.webflux in api-gateway/src/main/resources/application.yaml.
-# Keep your existing routes and other settings; this is an addition, not a full replacement.
-globalcors:
-  cors-configurations:
-    '[/**]':
-      allowedOrigins:
-        - "http://localhost:5173"
-      allowedMethods:
-        - GET
-        - POST
-        - PUT
-        - DELETE
-        - OPTIONS
-      allowedHeaders:
-        - "*"
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOrigins:
+                  - "http://localhost:5173"
+                  - "http://localhost:5174"
+                  - "https://YOUR-FRONTEND-NAME.onrender.com"
+                allowedMethods:
+                  - GET
+                  - POST
+                  - PUT
+                  - DELETE
+                  - OPTIONS
+                allowedHeaders:
+                  - "*"
