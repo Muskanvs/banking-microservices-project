@@ -284,7 +284,7 @@ function App() {
     }
   };
 
-  // UPDATED: Create the backend order, then open Razorpay Checkout.
+  // Create the backend order, then open Razorpay Checkout.
   const createPaymentOrder = async (e) => {
     e.preventDefault();
 
@@ -301,7 +301,7 @@ function App() {
         );
       }
 
-      // Step 1: Ask our backend to create a Razorpay order.
+      // Step 1: Ask the backend to create a Razorpay order.
       const p = await callApi('/api/v1/payments/create-order', {
         method: 'POST',
         body: JSON.stringify({
@@ -368,7 +368,6 @@ function App() {
       const checkout = new window.Razorpay(options);
       checkout.open();
 
-      // Keep the amount until payment verification is implemented.
       return {
         message:
           `Razorpay Checkout opened for order ${p.razorpayOrderId}. ` +
@@ -413,10 +412,11 @@ function App() {
     { name: 'Payments', icon: CreditCard }
   ];
 
+  // UPDATED: Safely calculate the number of completed transactions.
   const completedCount = useMemo(
     () =>
-      history.filter(
-        (t) => String(t.status).toUpperCase() === 'COMPLETED'
+      (Array.isArray(history) ? history : []).filter(
+        (t) => String(t?.status || '').toUpperCase() === 'COMPLETED'
       ).length,
     [history]
   );
@@ -493,7 +493,10 @@ function App() {
           </div>
           <div className="top-actions">
             <div className="environment">
-              <span className="tiny-dot" /> Local environment
+              <span className="tiny-dot" />
+              {apiBase.includes('localhost')
+                ? 'Local environment'
+                : 'Cloud environment'}
             </div>
             <div className="avatar">NS</div>
           </div>
@@ -675,7 +678,9 @@ function App() {
                     <span>Transactions loaded</span>
                     <span className="stat-icon purple"><Activity size={18} /></span>
                   </div>
-                  <div className="stat-value">{history.length}</div>
+                  <div className="stat-value">
+                    {Array.isArray(history) ? history.length : 0}
+                  </div>
                   <div className="stat-foot">
                     {completedCount} completed in this history
                   </div>
@@ -1205,7 +1210,10 @@ function App() {
   );
 }
 
+// UPDATED: Safe handling of missing or non-array transaction history.
 function TransactionTable({ history, onSelect, onAll }) {
+  const safeHistory = Array.isArray(history) ? history : [];
+
   return (
     <div className="panel table-panel">
       <div className="panel-heading">
@@ -1218,11 +1226,16 @@ function TransactionTable({ history, onSelect, onAll }) {
         </button>
       </div>
 
-      {!history.length ? (
+      {!safeHistory.length ? (
         <div className="empty-state">
-          <div className="empty-icon"><History size={22} /></div>
+          <div className="empty-icon">
+            <History size={22} />
+          </div>
           <strong>No transaction history loaded</strong>
-          <p>Look up an account to fetch its transaction history. No sample records are displayed.</p>
+          <p>
+            Look up an account to fetch its transaction history.
+            No sample records are displayed.
+          </p>
         </div>
       ) : (
         <div className="table-scroll">
@@ -1238,27 +1251,39 @@ function TransactionTable({ history, onSelect, onAll }) {
               </tr>
             </thead>
             <tbody>
-              {history.map((t, i) => (
+              {safeHistory.map((t, i) => (
                 <tr
-                  key={t.id || i}
+                  key={t?.id || i}
                   onClick={() => onSelect(t)}
                   className="clickable-row"
                 >
                   <td>
-                    <strong className="mono">{String(t.id || '—').slice(0, 13)}</strong>
+                    <strong className="mono">
+                      {String(t?.id || '—').slice(0, 13)}
+                    </strong>
                     <span className="cell-sub">
-                      {t.description || t.referenceNumber || 'No description'}
+                      {t?.description ||
+                        t?.referenceNumber ||
+                        'No description'}
                     </span>
                   </td>
-                  <td>{t.type || '—'}</td>
-                  <td>{prettyDate(t.createdAt)}</td>
-                  <td className="amount-cell">{money(t.amount)}</td>
+                  <td>{t?.type || '—'}</td>
+                  <td>{prettyDate(t?.createdAt)}</td>
+                  <td className="amount-cell">
+                    {money(t?.amount)}
+                  </td>
                   <td>
-                    <span className={`tag ${String(t.status || '').toLowerCase()}`}>
-                      {t.status || 'Unknown'}
+                    <span
+                      className={`tag ${String(
+                        t?.status || ''
+                      ).toLowerCase()}`}
+                    >
+                      {t?.status || 'Unknown'}
                     </span>
                   </td>
-                  <td><ChevronRight size={16} /></td>
+                  <td>
+                    <ChevronRight size={16} />
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -1274,7 +1299,11 @@ function TransactionDetails({ transaction: t }) {
     <div className="account-detail transaction-detail">
       <div className="detail-line">
         <span>Status</span>
-        <strong><span className={`tag ${String(t.status).toLowerCase()}`}>{t.status}</span></strong>
+        <strong>
+          <span className={`tag ${String(t.status).toLowerCase()}`}>
+            {t.status}
+          </span>
+        </strong>
       </div>
       <div className="detail-line">
         <span>Transaction ID</span>
