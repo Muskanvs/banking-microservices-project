@@ -1,4 +1,4 @@
-```yaml
+
 spring:
   application:
     name: api-gateway
@@ -70,4 +70,4 @@ management:
   endpoint:
     gateway:
       access: unrestricted
-```
+
