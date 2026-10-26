@@ -331,7 +331,7 @@ function App() {
         order_id: p.razorpayOrderId,
         amount: Math.round(amountInRupees * 100),
         currency: p.currency || 'INR',
-        name: 'Northstar Demo Banking',
+        name: 'Digital Banking System',
         description: paymentForm.description || 'Add funds',
 
         handler: function (response) {
@@ -1201,7 +1201,7 @@ function App() {
           )}
 
           <footer className="footer">
-            <span>Northstar Banking · Portfolio demo</span>
+            <span>Digital Banking System · Portfolio demo</span>
             <span><ShieldCheck size={14} /> No real money or real customer data</span>
           </footer>
         </div>
